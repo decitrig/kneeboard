@@ -49,7 +49,7 @@ def panel(c, px):
     style.panel(c, px, BLOCKS, block, "ATIS")
 
 def build(out):
-    style.build_sheet(out, "ATIS Template (C172 kneeboard, letter fold)", panel, panel)
+    style.build_sheet(out, "ATIS Template (C172 kneeboard, letter fold)", (panel, panel))
 
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "atis_letter_fold.pdf")
