@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VFR Navlog - letter fold</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+@page{size:11in 8.5in;margin:0}
+html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{position:relative;width:1056px;height:816px;background:#fff;color:#111;font-family:Barlow,sans-serif;display:flex;overflow:hidden;break-after:page;page-break-after:always}
+.sheet:last-child{break-after:auto;page-break-after:auto}
+.panel{box-sizing:border-box;width:528px;height:816px;flex:none}
+.fold{position:absolute;left:527px;height:12px;border-left:1.5px dashed #888}
+body{margin:0;background:#fff}
+.r{display:grid;grid-template-columns:39px 36px 39px 35px 36px 35px 49px 60px 50px 46px 49px}
+.hc{box-sizing:border-box;border-right:1px solid #222;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;line-height:1.05;color:#111;text-transform:uppercase;letter-spacing:.02em;text-align:center}
+.hc small{font-weight:500;font-size:9px;letter-spacing:0;text-transform:none;color:#333}
+.hc:last-child{border-right:0}
+.hc.hk{background:#fff;font-size:18px;color:#000;letter-spacing:.04em}
+.hc.hk small{font-size:10px;font-weight:600;color:#111}
+.c{box-sizing:border-box;border-right:1px solid #444;min-width:0}
+.c:last-child{border-right:0}
+.c.key{background:#fff}
+.v{display:flex;flex-direction:column}
+.v>div{flex:1}
+.v>div:first-child{border-bottom:1px dotted #888}
+.tv>div:last-child{background:#f1f1f1}
+.k{background:#f1f1f1}
+.t{border-top:2px solid #222}
+.l{border-top:1px dotted #888}
+.na{background:repeating-linear-gradient(135deg,#f1f1f1 0,#f1f1f1 4px,#9a9a9a 4px,#9a9a9a 5px)}
+.ovt::after{content:"";position:absolute;left:-1px;bottom:-2px;width:21px;border-bottom:2px solid #222}
+.ovb::after{content:"";position:absolute;left:-1px;bottom:-1px;width:21px;border-bottom:1px solid #222}
+.ovh::after{content:"";position:absolute;left:-1px;bottom:-1px;width:21px;border-bottom:1px solid #222}
+.lbl{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#222}
+.fld{display:flex;flex-direction:column;gap:1px;min-width:0}
+.fld>div:last-child{height:19px;border-bottom:1.5px solid #222}
+.hrow{display:flex;gap:10px;align-items:flex-end}
+.sec{font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:16px;letter-spacing:.08em;text-transform:uppercase;background:#ececec;border:1.5px solid #222;padding:2px 10px;height:24px;box-sizing:border-box;display:flex;align-items:center}
+.f{height:40px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;border-bottom:1.5px solid #222;padding-top:3px}
+.gf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;margin-top:2px}
+.eh{display:grid;grid-template-columns:150px 84px minmax(0,1fr);height:22px;font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border-bottom:1.5px solid #222;margin-top:6px}
+.eh>div{display:flex;align-items:center;padding-left:6px;border-right:1px solid #444}
+.eh>div:last-child{border-right:0}
+.er{display:grid;grid-template-columns:150px 84px minmax(0,1fr);height:40px;border-bottom:1px solid #444}
+.er>div{border-right:1px solid #444}
+.er>div:last-child{border-right:0}
+.nl{height:38px;border-bottom:1px solid #666}
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="fold" style="top:0"></div><div class="fold" style="bottom:0"></div>
+<div style="box-sizing:border-box;width:528px;height:816px;padding:16px 16px 0 16px;flex:none">
+<div class="hrow">
+<div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;line-height:1;letter-spacing:.04em;padding-bottom:3px">NAVLOG</div>
+<div class="fld" style="flex:1.2"><div class="lbl">Aircraft</div><div></div></div>
+<div class="fld" style="flex:1"><div class="lbl">Date</div><div></div></div>
+<div class="fld" style="flex:1"><div class="lbl">From</div><div></div></div>
+<div class="fld" style="flex:1"><div class="lbl">To</div><div></div></div>
+</div>
+<div class="hrow" style="margin-top:5px">
+<div class="fld" style="flex:1.5"><div class="lbl">Cruise RPM / MP</div><div></div></div>
+<div class="fld" style="flex:1"><div class="lbl">TAS</div><div></div></div>
+<div class="fld" style="flex:1"><div class="lbl">GPH</div><div></div></div>
+<div class="fld" style="flex:1.2"><div class="lbl">Fuel on board</div><div></div></div>
+<div class="fld" style="flex:1.2"><div class="lbl">Endurance</div><div></div></div>
+</div>
+
+<div style="margin:7px 0 0 20px;border:1px solid #222;box-sizing:border-box;width:476px">
+
+<div class="r" style="grid-template-rows:30px 20px">
+<div class="hc hk" style="grid-column:8;grid-row:1 / span 2">ETE<small>est / act</small></div>
+<div class="hc" style="grid-column:9;grid-row:1 / span 2;background:#fff">GS<small>est / act</small></div>
+<div class="hc" style="grid-column:10;grid-row:1 / span 2;background:#fff">Dist<small>leg / remain</small></div>
+<div class="hc" style="grid-column:11;grid-row:1 / span 2;background:#fff;border-right:0">Fuel<small>leg / remain</small></div>
+<div class="hc" style="background:#fff">TC<small>true</small></div>
+<div class="hc" style="background:#fff">WCA<small>R+ L−</small></div>
+<div class="hc" style="background:#fff">TH<small>true</small></div>
+<div class="hc" style="background:#fff">Var<small>W+ E−</small></div>
+<div class="hc" style="background:#fff">MH<small>mag</small></div>
+<div class="hc" style="background:#fff">Dev<small>card</small></div>
+<div class="hc hk">CH<small>compass</small></div>
+<div class="hc ovh" style="grid-column:span 3;margin:0 0 0 -20px;border-left:1px solid #222;border-top:1px solid #222;position:relative;background:#ececec;flex-direction:row;justify-content:flex-start;padding-left:24px;font-size:12px">Checkpoint</div>
+<div class="hc" style="grid-column:span 3;background:#ececec;border-top:1px solid #222;font-size:12px">Navaid</div>
+<div class="hc" style="background:#ececec;border-top:1px solid #222;font-size:12px;border-right:1px solid #222">Alt</div>
+</div>
+
+<div class="r" style="height:28px">
+<div class="c k t ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k t" style="grid-column:span 3"></div>
+<div class="c k t"></div>
+<div class="c na t" style="grid-column:span 2"></div>
+<div class="c k t"></div>
+<div class="c k t"></div>
+</div>
+
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovb" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+</div></div>
+<div style="box-sizing:border-box;width:528px;height:816px;padding:16px 16px 0 16px;flex:none">
+<div style="margin:7px 0 0 20px;border:1px solid #222;box-sizing:border-box;width:476px">
+
+<div class="r" style="grid-template-rows:30px 20px">
+<div class="hc hk" style="grid-column:8;grid-row:1 / span 2">ETE<small>est / act</small></div>
+<div class="hc" style="grid-column:9;grid-row:1 / span 2;background:#fff">GS<small>est / act</small></div>
+<div class="hc" style="grid-column:10;grid-row:1 / span 2;background:#fff">Dist<small>leg / remain</small></div>
+<div class="hc" style="grid-column:11;grid-row:1 / span 2;background:#fff;border-right:0">Fuel<small>leg / remain</small></div>
+<div class="hc" style="background:#fff">TC<small>true</small></div>
+<div class="hc" style="background:#fff">WCA<small>R+ L−</small></div>
+<div class="hc" style="background:#fff">TH<small>true</small></div>
+<div class="hc" style="background:#fff">Var<small>W+ E−</small></div>
+<div class="hc" style="background:#fff">MH<small>mag</small></div>
+<div class="hc" style="background:#fff">Dev<small>card</small></div>
+<div class="hc hk">CH<small>compass</small></div>
+<div class="hc ovh" style="grid-column:span 3;margin:0 0 0 -20px;border-left:1px solid #222;border-top:1px solid #222;position:relative;background:#ececec;flex-direction:row;justify-content:flex-start;padding-left:24px;font-size:12px">Checkpoint</div>
+<div class="hc" style="grid-column:span 3;background:#ececec;border-top:1px solid #222;font-size:12px">Navaid</div>
+<div class="hc" style="background:#ececec;border-top:1px solid #222;font-size:12px;border-right:1px solid #222">Alt</div>
+</div>
+
+<div class="r" style="height:28px">
+<div class="c k t ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k t" style="grid-column:span 3"></div>
+<div class="c k t"></div>
+<div class="c na t" style="grid-column:span 2"></div>
+<div class="c k t"></div>
+<div class="c k t"></div>
+</div>
+
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovt" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+<div class="r" style="grid-template-rows:28px 28px">
+<div class="c v tv key t" style="grid-column:8;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:9;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:10;grid-row:1 / span 2"><div></div><div></div></div>
+<div class="c v tv t" style="grid-column:11;grid-row:1 / span 2;border-right:0"><div></div><div></div></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t"></div>
+<div class="c t key"></div>
+<div class="c k l ovb" style="grid-column:span 3;margin-left:-20px;border-left:1px solid #222;position:relative"></div>
+<div class="c k l" style="grid-column:span 3"></div>
+<div class="c k l" style="border-right:1px solid #444"></div>
+</div>
+</div></div>
+</div>
+<div class="sheet">
+<div class="fold" style="top:0"></div><div class="fold" style="bottom:0"></div>
+<div class="panel" style="padding:18px 16px 0 16px">
+<div class="sec">Departure</div>
+<div class="gf">
+<div class="f"><div class="lbl">Airport</div></div>
+<div class="f"><div class="lbl">Elev / runway</div></div>
+<div class="f"><div class="lbl">ATIS / AWOS</div></div>
+<div class="f"><div class="lbl">Clearance</div></div>
+<div class="f"><div class="lbl">Ground</div></div>
+<div class="f"><div class="lbl">Tower / CTAF</div></div>
+<div class="f"><div class="lbl">Departure</div></div>
+<div class="f"><div class="lbl">Squawk</div></div>
+</div>
+<div style="height:12px"></div><div class="sec">Destination / alternate</div>
+<div class="gf">
+<div class="f"><div class="lbl">Airport</div></div>
+<div class="f"><div class="lbl">Elev / runway</div></div>
+<div class="f"><div class="lbl">ATIS / AWOS</div></div>
+<div class="f"><div class="lbl">Tower / CTAF</div></div>
+<div class="f"><div class="lbl">Ground</div></div>
+<div class="f"><div class="lbl">Approach / Center</div></div>
+<div class="f"><div class="lbl">Alternate</div></div>
+<div class="f"><div class="lbl">Alt freq</div></div>
+</div>
+<div style="height:12px"></div><div class="sec">Notes</div>
+<div class="nl"></div>
+<div class="nl"></div>
+<div class="nl"></div>
+<div class="nl"></div>
+<div class="nl"></div>
+<div class="nl"></div>
+<div class="nl"></div>
+<div class="nl"></div>
+<div class="nl"></div>
+</div>
+<div class="panel" style="padding:18px 16px 0 16px">
+<div class="sec">Enroute frequencies</div>
+<div class="eh"><div>Facility</div><div>Freq</div><div>Notes</div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+<div class="er"><div></div><div></div><div></div></div>
+</div>
+</div>
+</body>
+</html>
