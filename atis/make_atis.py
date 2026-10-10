@@ -10,22 +10,20 @@ Fonts, line weights and shading come from ../style.py.
 import os
 import sys
 
-from reportlab.lib.pagesizes import inch
-from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
 
 sys.dont_write_bytecode = True  # keep the repo root free of __pycache__
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import style  # noqa: E402
-from style import W, H, PANEL_W, cell, block_frame, write_lines, fold_line  # noqa: E402
+from style import HEADER_H, LINE_TOP, cell, block_frame, write_lines  # noqa: E402
 
 BLOCKS = 4                # per panel
-SIDES = 2
 
 def block(c, x, y, w, h):
     top = y + h
     with block_frame(c, x, y, w, h):
         # Header: airport | info letter | time
-        hh = 0.45 * inch
+        hh = HEADER_H
         aw, lw = w * 0.42, 0.7 * inch
         cell(c, x, top - hh, aw, hh, "AIRPORT", band=True)
         cell(c, x + aw, top - hh, lw, hh, "INFO", band=True)
@@ -45,18 +43,13 @@ def block(c, x, y, w, h):
                 cx += span * unit
         # Remarks fill the rest
         cell(c, x, y, w, yy - y, "NOTAMS / REMARKS")
-        write_lines(c, x, y, w, yy - 0.28 * inch, 0.22 * inch)
+        write_lines(c, x, y, w, yy - LINE_TOP)
 
 def panel(c, px):
     style.panel(c, px, BLOCKS, block, "ATIS")
 
 def build(out):
-    c = canvas.Canvas(out, pagesize=(W, H))
-    c.setTitle("ATIS Template (C172 kneeboard, letter fold)")
-    for _ in range(SIDES):
-        panel(c, 0); panel(c, PANEL_W); fold_line(c)
-        c.showPage()
-    c.save()
+    style.build_sheet(out, "ATIS Template (C172 kneeboard, letter fold)", panel, panel)
 
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "atis_letter_fold.pdf")

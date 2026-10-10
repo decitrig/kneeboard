@@ -12,8 +12,9 @@ import re
 import xml.etree.ElementTree as ET
 from contextlib import contextmanager
 
-from reportlab.lib.pagesizes import inch
+from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +27,13 @@ W, H = 11 * inch, 8.5 * inch
 PANEL_W = W / 2
 M = 0.3 * inch            # margin on every panel edge, fold side included
 GAP = 0.1 * inch          # between blocks
+HEADER_H = 0.45 * inch    # airport / letter / time band at the top of a block
+LINE_PITCH = 0.22 * inch  # handwriting guide spacing
+LINE_TOP = 0.28 * inch    # first guide, below the top of its cell
+
+# Type sizes, pt
+LABEL_SIZE = 5.8
+HINT_SIZE = 5.2
 
 # Ink
 GRID = 0.6                # inner cell dividers
@@ -40,10 +48,10 @@ def cell(c, x, y, w, h, text, hint=None, band=False):
     if band:
         c.setFillGray(BAND); c.rect(x, y, w, h, stroke=0, fill=1)
     c.setStrokeGray(GRID); c.setLineWidth(0.5); c.rect(x, y, w, h)
-    c.setFillGray(LABEL); c.setFont(FONT_BOLD, 5.8)
+    c.setFillGray(LABEL); c.setFont(FONT_BOLD, LABEL_SIZE)
     c.drawString(x + 3.5, y + h - 8, text)
     if hint:
-        c.setFillGray(HINT); c.setFont(FONT, 5.2)
+        c.setFillGray(HINT); c.setFont(FONT, HINT_SIZE)
         c.drawRightString(x + w - 3.5, y + h - 8, hint)
     c.setFillGray(0)
 
@@ -58,7 +66,7 @@ def checkbox(c, x, y, size=6):
     c.setStrokeGray(0.3); c.setLineWidth(0.6)
     c.roundRect(x, y, size, size, 1.2)
 
-def write_lines(c, x, y, w, top, pitch):
+def write_lines(c, x, y, w, top, pitch=LINE_PITCH):
     """Dotted handwriting guides from top down to just above y."""
     c.saveState()
     c.setStrokeGray(RULE); c.setLineWidth(0.6); c.setLineCap(1); c.setDash(0.1, 2.4)
@@ -88,6 +96,16 @@ def panel(c, px, blocks, block, name):
     c.drawCentredString(px + PANEL_W / 2, 0.11 * inch, name)
     c.setFillGray(0)
     wordmark(c, px + PANEL_W - M, 0.08 * inch)
+
+def build_sheet(out, title, left, right, sides=2):
+    """Write a duplex letter-fold PDF: left(c, px) and right(c, px) draw the
+    two half-letter panels, repeated on every side."""
+    c = canvas.Canvas(out, pagesize=(W, H), initialFontName=FONT, invariant=1)
+    c.setTitle(title); c.setAuthor("decitrig"); c.setCreator("decitrig kneeboard")
+    for _ in range(sides):
+        left(c, 0); right(c, PANEL_W); fold_line(c)
+        c.showPage()
+    c.save()
 
 def fold_line(c):
     c.saveState()
@@ -138,15 +156,25 @@ def _svg_path(c, d):
             raise ValueError("unsupported SVG path command " + cmd)
     return p
 
+_mark = None
+
+def _mark_root():
+    """The parsed mark SVG, read once per run."""
+    global _mark
+    if _mark is None:
+        _mark = ET.parse(MARK_SVG).getroot()
+    return _mark
+
 def wordmark(c, right, bottom, width=MARK_W):
     """Draw the decitrig wordmark with its bottom-right corner at (right, bottom)."""
-    root = ET.parse(MARK_SVG).getroot()
+    root = _mark_root()
     vx, vy, vw, vh = map(float, root.get("viewBox").split())
     k = width / vw
     c.saveState()
     # SVG y runs down: flip, scale and move the viewBox into place
     c.transform(k, 0, 0, -k, right - width - vx * k, bottom + (vy + vh) * k)
     c.setLineCap(1); c.setLineJoin(1)
+    parents = {ch: g.get("transform") for g in root.iter() for ch in g if g.get("transform")}
     for el in root.iter():
         tag = el.tag.split("}")[-1]
         if tag not in ("path", "circle"):
@@ -164,8 +192,7 @@ def wordmark(c, right, bottom, width=MARK_W):
             c.drawPath(_svg_path(c, el.get("d")), stroke=stroke, fill=fill)
         else:
             cx, cy = 0.0, 0.0
-            parent_t = next((g.get("transform") for g in root.iter()
-                             if el in list(g) and g.get("transform")), None)
+            parent_t = parents.get(el)
             if parent_t:
                 cx, cy = map(float, re.findall(r"-?[\d.]+", parent_t))
             c.circle(cx + float(el.get("cx", 0)), cy + float(el.get("cy", 0)),
