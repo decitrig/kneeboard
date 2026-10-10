@@ -3,7 +3,7 @@
 Same landscape letter fold format as the other sheets. Front: one navlog
 across both panels, 11 legs on the left under the route header and 12 more
 on the right. Back: departure and destination / alternate frequencies and
-notes on the left, enroute frequencies on the right.
+notes on the left; enroute frequencies over weight & balance on the right.
 
 Each leg is a white row of headings (TC through CH) followed by the shaded
 checkpoint it arrives at. ETE, GS, distance and fuel span both rows: the
@@ -173,19 +173,73 @@ def back_left(c, px):
         write_lines(c, x, y, w, top - TITLE_H - style.LINE_PITCH)
     panel_marks(c, px, "NAVLOG")
 
-def back_right(c, px):
-    x, w, top = px + M, PANEL_W - 2 * M, H - M
+def enroute_block(c, x, top, w, h):
     widths = (0.30 * w, 0.17 * w, 0.53 * w)
-    avail = H - 2 * M - TITLE_H
+    avail = h - TITLE_H
     n = round(avail / (0.4 * inch))
     rh = avail / n
-    with block_frame(c, x, M, w, H - 2 * M):
+    with block_frame(c, x, top - h, w, h):
         cx = x
         for label, cw in zip(("ENROUTE FACILITY", "FREQ", "NOTES"), widths):
             cell(c, cx, top - TITLE_H, cw, TITLE_H, label, band=True)
             for r in range(n):
                 cell(c, cx, top - TITLE_H - (r + 1) * rh, cw, rh, "")
             cx += cw
+
+# Weight & balance stations: (label, hint, total row). Arms are left blank
+# because they differ between C172 models; the arm of a total is its CG.
+WB_ROWS = [("BASIC EMPTY WEIGHT", None, False),
+           ("FRONT SEATS", None, False),
+           ("REAR SEATS", None, False),
+           ("BAGGAGE AREA 1", None, False),
+           ("BAGGAGE AREA 2", None, False),
+           ("USABLE FUEL", "gal × 6", False),
+           ("TAKEOFF", None, True),
+           ("FUEL BURN", "− gal × 6", False),
+           ("LANDING", None, True)]
+WB_COLS = (("STATION", None, 0.40), ("WEIGHT", "lb", 0.20),
+           ("ARM", "in", 0.17), ("MOMENT", "÷ 1000", 0.23))
+WB_HEAD = 0.2 * inch      # column header row
+WB_LIMITS = 0.36 * inch   # limits row at the bottom
+
+def wb_block(c, x, top, w, h):
+    """Weight, arm and moment per station; totals carry the CG."""
+    xs = [x]
+    for _, _, f in WB_COLS:
+        xs.append(xs[-1] + f * w)
+    xs[-1] = x + w
+    rh = (h - TITLE_H - WB_HEAD - WB_LIMITS) / len(WB_ROWS)
+    y = top - h
+    with block_frame(c, x, y, w, h):
+        cell(c, x, top - TITLE_H, w, TITLE_H, "WEIGHT & BALANCE", band=True)
+        hy = top - TITLE_H - WB_HEAD
+        for i, (label, hint, _) in enumerate(WB_COLS):
+            cell(c, xs[i], hy, xs[i + 1] - xs[i], WB_HEAD, label, hint)
+        for r, (label, hint, total) in enumerate(WB_ROWS):
+            ry = hy - (r + 1) * rh
+            if total:
+                c.setFillGray(SHADE); c.rect(x, ry, w, rh, stroke=0, fill=1)
+            for i in range(len(WB_COLS)):
+                cw = xs[i + 1] - xs[i]
+                if i == 0:
+                    cell(c, xs[i], ry, cw, rh, label, hint)
+                elif i == 2 and total:
+                    cell(c, xs[i], ry, cw, rh, "CG", "in")
+                else:
+                    cell(c, xs[i], ry, cw, rh, "")
+            if total:
+                rule(c, x, ry + rh, x + w, ry + rh, heavy=True)
+        ly = y + WB_LIMITS
+        rule(c, x, ly, x + w, ly, heavy=True)
+        cell(c, x, y, 0.4 * w, WB_LIMITS, "MAX GROSS", "lb")
+        cell(c, x + 0.4 * w, y, 0.6 * w, WB_LIMITS, "CG LIMITS", "fwd – aft")
+
+def back_right(c, px):
+    """Enroute frequencies on top, weight & balance below."""
+    x, w, top = px + M, PANEL_W - 2 * M, H - M
+    half = (H - 2 * M - GAP) / 2
+    enroute_block(c, x, top, w, half)
+    wb_block(c, x, M + half, w, half)
     panel_marks(c, px, "NAVLOG")
 
 def build(out):
