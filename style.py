@@ -74,6 +74,36 @@ def dotted(c, x1, y, x2, inset=5):
     c.line(x1 + inset, y, x2 - inset, y)
     c.restoreState()
 
+def _outline(c, pts, radius):
+    """Closed path through pts (clockwise, y up), outer corners rounded."""
+    p = c.beginPath()
+    n = len(pts)
+    for i in range(n):
+        (ax, ay), (bx, by), (cx, cy) = pts[i - 1], pts[i], pts[(i + 1) % n]
+        l1, l2 = abs(bx - ax) + abs(by - ay), abs(cx - bx) + abs(cy - by)
+        turn = (bx - ax) * (cy - by) - (by - ay) * (cx - bx)
+        r = min(radius, l1 / 2, l2 / 2) if turn < 0 else 0   # right turn = outer
+        p1 = (bx - (bx - ax) / l1 * r, by - (by - ay) / l1 * r)
+        p2 = (bx + (cx - bx) / l2 * r, by + (cy - by) / l2 * r)
+        (p.moveTo if i == 0 else p.lineTo)(*p1)
+        if r:
+            k = 0.5523
+            p.curveTo(p1[0] + (bx - p1[0]) * k, p1[1] + (by - p1[1]) * k,
+                      p2[0] + (bx - p2[0]) * k, p2[1] + (by - p2[1]) * k, *p2)
+    p.close()
+    return p
+
+@contextmanager
+def shape_frame(c, pts, radius=RADIUS):
+    """block_frame for a block that isn't a rectangle: pts are its corners,
+    clockwise; outer corners are rounded like every other block."""
+    c.saveState()
+    c.clipPath(_outline(c, pts, radius), stroke=0, fill=0)
+    yield
+    c.restoreState()
+    c.setStrokeGray(0); c.setLineWidth(1.3); c.setLineJoin(1)
+    c.drawPath(_outline(c, pts, radius), stroke=1, fill=0)
+
 def write_lines(c, x, y, w, top, pitch=LINE_PITCH):
     """Dotted handwriting guides from top down to just above y."""
     ly = top
