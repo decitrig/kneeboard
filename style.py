@@ -40,6 +40,7 @@ GRID = 0.6                # inner cell dividers
 LABEL = 0.15              # field labels
 HINT = 0.45               # units / hints
 BAND = 0.9                # header row fill
+SHADE = 0.95              # lighter fill for rows that alternate with white ones
 RULE = 0.55               # writing guide dots
 RADIUS = 5                # block corner radius, pt
 
@@ -66,13 +67,28 @@ def checkbox(c, x, y, size=6):
     c.setStrokeGray(0.3); c.setLineWidth(0.6)
     c.roundRect(x, y, size, size, 1.2)
 
-def write_lines(c, x, y, w, top, pitch=LINE_PITCH):
-    """Dotted handwriting guides from top down to just above y."""
+def dotted(c, x1, y, x2, inset=5):
+    """One dotted guide, the same ink as write_lines."""
     c.saveState()
     c.setStrokeGray(RULE); c.setLineWidth(0.6); c.setLineCap(1); c.setDash(0.1, 2.4)
+    c.line(x1 + inset, y, x2 - inset, y)
+    c.restoreState()
+
+def write_lines(c, x, y, w, top, pitch=LINE_PITCH):
+    """Dotted handwriting guides from top down to just above y."""
     ly = top
     while ly > y + 0.08 * inch:
-        c.line(x + 5, ly, x + w - 5, ly); ly -= pitch
+        dotted(c, x, ly, x + w); ly -= pitch
+
+def hatch(c, x, y, w, h, step=4):
+    """Light diagonal hatching: a cell that is not filled in."""
+    c.saveState()
+    p = c.beginPath(); p.rect(x, y, w, h); c.clipPath(p, stroke=0, fill=0)
+    c.setFillGray(SHADE); c.rect(x, y, w, h, stroke=0, fill=1)
+    c.setStrokeGray(0.65); c.setLineWidth(0.4)
+    k = -h
+    while k < w:
+        c.line(x + k, y, x + k + h, y + h); k += step
     c.restoreState()
 
 @contextmanager
@@ -91,18 +107,21 @@ def panel(c, px, blocks, block, name):
     bh = (H - 2 * M - GAP * (blocks - 1)) / blocks
     for i in range(blocks):
         block(c, px + M, H - M - (i + 1) * bh - i * GAP, bw, bh)
-    # Small panel tag in the bottom margin, out of the kneeboard clip
+    panel_marks(c, px, name)
+
+def panel_marks(c, px, name):
+    """Panel tag and wordmark in the bottom margin, out of the kneeboard clip."""
     c.setFillGray(HINT); c.setFont(FONT, 5.5)
     c.drawCentredString(px + PANEL_W / 2, 0.11 * inch, name)
     c.setFillGray(0)
     wordmark(c, px + PANEL_W - M, 0.08 * inch)
 
-def build_sheet(out, title, left, right, sides=2):
-    """Write a duplex letter-fold PDF: left(c, px) and right(c, px) draw the
-    two half-letter panels, repeated on every side."""
+def build_sheet(out, title, front, back=None):
+    """Write a duplex letter-fold PDF. front and back are (left, right) pairs
+    of panel functions f(c, px); back defaults to a copy of front."""
     c = canvas.Canvas(out, pagesize=(W, H), initialFontName=FONT, invariant=1)
     c.setTitle(title); c.setAuthor("decitrig"); c.setCreator("decitrig kneeboard")
-    for _ in range(sides):
+    for left, right in (front, back or front):
         left(c, 0); right(c, PANEL_W); fold_line(c)
         c.showPage()
     c.save()

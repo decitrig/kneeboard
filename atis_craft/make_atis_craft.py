@@ -20,7 +20,7 @@ import make_craft  # noqa: E402
 
 def build(out):
     style.build_sheet(out, "ATIS + CRAFT Template (C172 kneeboard, letter fold)",
-                      make_atis.panel, make_craft.panel)
+                      (make_atis.panel, make_craft.panel))
 
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "atis_craft_letter_fold.pdf")

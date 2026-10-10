@@ -23,6 +23,7 @@ pip install reportlab
 python3 atis/make_atis.py
 python3 craft/make_craft.py
 python3 atis_craft/make_atis_craft.py
+python3 navlog/make_navlog.py
 ```
 
 Each script writes its PDF into its own folder. Fonts, line weights and
@@ -38,18 +39,8 @@ either of those.
 
 ### Navlog
 
-The navlog is drawn as HTML instead of reportlab. The page is
-[navlog/navlog_letter_fold.html](navlog/navlog_letter_fold.html): sheet 1 is
-the front, sheet 2 is the back, each a landscape US letter page. The PDF is
-printed from it with headless Edge or Chrome (it loads the Barlow and Barlow
-Condensed fonts from Google Fonts, so it needs a network connection):
-
-```sh
-msedge --headless=new --no-pdf-header-footer --virtual-time-budget=15000 \
-  --print-to-pdf=navlog/navlog_letter_fold.pdf \
-  "file:///$PWD/navlog/navlog_letter_fold.html"
-```
-
-Each half-letter panel on the front is a complete navlog. The left panel has
-the route header (aircraft, date, from, to, cruise power, TAS, GPH, fuel) and
-11 legs; the right panel continues the route with 12 more.
+The front is one navlog across both panels: the left panel has the route
+header (aircraft, date, from, to, cruise power, TAS, GPH, fuel, endurance)
+and legs 1 to 11, the right panel continues with legs 12 to 23. Each leg is
+a white row of headings followed by the shaded checkpoint it arrives at;
+ETE, GS, distance and fuel span both rows, estimate above and actual below.
