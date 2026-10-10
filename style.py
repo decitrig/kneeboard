@@ -8,6 +8,8 @@ Font: B612, the typeface Airbus and ENAC designed for cockpit displays
 stay readable at 6pt on a bouncing kneeboard.
 """
 import os
+import re
+import xml.etree.ElementTree as ET
 from contextlib import contextmanager
 
 from reportlab.lib.pagesizes import inch
@@ -85,6 +87,7 @@ def panel(c, px, blocks, block, name):
     c.setFillGray(HINT); c.setFont(FONT, 5.5)
     c.drawCentredString(px + PANEL_W / 2, 0.11 * inch, name)
     c.setFillGray(0)
+    wordmark(c, px + PANEL_W - M, 0.08 * inch)
 
 def fold_line(c):
     c.saveState()
@@ -93,4 +96,78 @@ def fold_line(c):
     c.setFillGray(0.6); c.setFont(FONT, 5)
     for ty in (0.1 * inch, H - 0.17 * inch):
         c.drawCentredString(PANEL_W, ty, "FOLD")
+    c.restoreState()
+
+# decitrig wordmark, from github.com/decitrig/decimarks (small, for-light).
+# Drawn as vector paths in gray so it stays crisp and prints like the rest.
+MARK_SVG = os.path.join(HERE, "marks", "decitrig-wordmark-small-for-light.svg")
+MARK_W = 0.5 * inch       # printed width of the mark
+MARK_INK, MARK_ACCENT = HINT, 0.65
+
+def _svg_path(c, d):
+    """reportlab path from SVG path data (the M L Q H V Z subset the mark uses)."""
+    p = c.beginPath()
+    toks = re.findall(r"[A-Za-z]|-?\d*\.?\d+", d)
+    i, cmd, x, y = 0, None, 0.0, 0.0
+    def num():
+        nonlocal i
+        i += 1
+        return float(toks[i - 1])
+    while i < len(toks):
+        if toks[i].isalpha():
+            cmd = toks[i]; i += 1
+        rel = cmd.islower(); C = cmd.upper()
+        ox, oy = (x, y) if rel else (0.0, 0.0)
+        if C == "M":
+            x, y = ox + num(), oy + num(); p.moveTo(x, y)
+            cmd = "l" if rel else "L"
+        elif C == "L":
+            x, y = ox + num(), oy + num(); p.lineTo(x, y)
+        elif C == "H":
+            x = ox + num(); p.lineTo(x, y)
+        elif C == "V":
+            y = oy + num(); p.lineTo(x, y)
+        elif C == "Q":
+            qx, qy, ex, ey = ox + num(), oy + num(), ox + num(), oy + num()
+            p.curveTo(x + 2 / 3 * (qx - x), y + 2 / 3 * (qy - y),
+                      ex + 2 / 3 * (qx - ex), ey + 2 / 3 * (qy - ey), ex, ey)
+            x, y = ex, ey
+        elif C == "Z":
+            p.close()
+        else:
+            raise ValueError("unsupported SVG path command " + cmd)
+    return p
+
+def wordmark(c, right, bottom, width=MARK_W):
+    """Draw the decitrig wordmark with its bottom-right corner at (right, bottom)."""
+    root = ET.parse(MARK_SVG).getroot()
+    vx, vy, vw, vh = map(float, root.get("viewBox").split())
+    k = width / vw
+    c.saveState()
+    # SVG y runs down: flip, scale and move the viewBox into place
+    c.transform(k, 0, 0, -k, right - width - vx * k, bottom + (vy + vh) * k)
+    c.setLineCap(1); c.setLineJoin(1)
+    for el in root.iter():
+        tag = el.tag.split("}")[-1]
+        if tag not in ("path", "circle"):
+            continue
+        gray = MARK_INK
+        if "c4691a" in (el.get("fill", "") + el.get("stroke", "")).lower():
+            gray = MARK_ACCENT
+        stroke = el.get("stroke") not in (None, "none")
+        fill = el.get("fill", "#000") != "none"
+        c.setStrokeGray(gray); c.setFillGray(gray)
+        c.setLineWidth(float(el.get("stroke-width", 1)))
+        if tag == "path":
+            if not el.get("d"):
+                continue
+            c.drawPath(_svg_path(c, el.get("d")), stroke=stroke, fill=fill)
+        else:
+            cx, cy = 0.0, 0.0
+            parent_t = next((g.get("transform") for g in root.iter()
+                             if el in list(g) and g.get("transform")), None)
+            if parent_t:
+                cx, cy = map(float, re.findall(r"-?[\d.]+", parent_t))
+            c.circle(cx + float(el.get("cx", 0)), cy + float(el.get("cy", 0)),
+                     float(el.get("r")), stroke=stroke, fill=fill)
     c.restoreState()
