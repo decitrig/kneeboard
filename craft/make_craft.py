@@ -10,23 +10,21 @@ Fonts, line weights and shading come from ../style.py.
 import os
 import sys
 
-from reportlab.lib.pagesizes import inch
-from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
 
 sys.dont_write_bytecode = True  # keep the repo root free of __pycache__
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import style  # noqa: E402
-from style import (W, H, PANEL_W, cell, letter_cell, checkbox,  # noqa: E402
-                   block_frame, write_lines, fold_line)
+from style import (HEADER_H, LINE_TOP, HINT_SIZE, FONT, cell,  # noqa: E402
+                   letter_cell, checkbox, block_frame, write_lines)
 
 BLOCKS = 3                # per panel (CRAFT needs more writing room than ATIS)
-SIDES = 2
 
 def block(c, x, y, w, h):
     top = y + h
     with block_frame(c, x, y, w, h):
         # Header: airport / facility | ATIS letter | time
-        hh = 0.4 * inch
+        hh = HEADER_H
         aw, lw = w * 0.42, 0.7 * inch
         cell(c, x, top - hh, aw, hh, "AIRPORT / FACILITY", band=True)
         cell(c, x + aw, top - hh, lw, hh, "ATIS", band=True)
@@ -47,19 +45,14 @@ def block(c, x, y, w, h):
         # Notes fill the rest (restrictions, traffic, readback corrections)
         cell(c, x, y, w, yy - y, "NOTES / RESTRICTIONS", "read back")
         bs = 6
-        checkbox(c, x + w - 3.5 - c.stringWidth("read back", style.FONT, 5.2) - bs - 2.5, yy - 8.6, bs)
-        write_lines(c, x, y, w, yy - 0.26 * inch, 0.2 * inch)
+        checkbox(c, x + w - 3.5 - c.stringWidth("read back", FONT, HINT_SIZE) - bs - 2.5, yy - 8.6, bs)
+        write_lines(c, x, y, w, yy - LINE_TOP)
 
 def panel(c, px):
     style.panel(c, px, BLOCKS, block, "CRAFT")
 
 def build(out):
-    c = canvas.Canvas(out, pagesize=(W, H))
-    c.setTitle("CRAFT Template (C172 kneeboard, letter fold)")
-    for _ in range(SIDES):
-        panel(c, 0); panel(c, PANEL_W); fold_line(c)
-        c.showPage()
-    c.save()
+    style.build_sheet(out, "CRAFT Template (C172 kneeboard, letter fold)", panel, panel)
 
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "craft_letter_fold.pdf")
