@@ -29,6 +29,8 @@ shading live in `style.py` at the repo root, shared by every generator, so a
 look change there carries to all sheets. Labels use
 [B612](https://github.com/polarsys/b612), the font Airbus designed for
 cockpit displays (OFL, vendored in `fonts/`). Everything is grayscale for
-black-and-white printing. The combined sheet imports
+black-and-white printing. Each panel carries a small gray decitrig wordmark
+in its bottom margin, drawn from `marks/` (copied from
+[decimarks](https://github.com/decitrig/decimarks)). The combined sheet imports
 the panel designs from `atis/` and `craft/`, so rerun it after changing
 either of those.
