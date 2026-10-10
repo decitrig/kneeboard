@@ -24,6 +24,11 @@ python3 craft/make_craft.py
 python3 atis_craft/make_atis_craft.py
 ```
 
-Each script writes its PDF into its own folder. The combined sheet imports
+Each script writes its PDF into its own folder. Fonts, line weights and
+shading live in `style.py` at the repo root, shared by every generator, so a
+look change there carries to all sheets. Labels use
+[B612](https://github.com/polarsys/b612), the font Airbus designed for
+cockpit displays (OFL, vendored in `fonts/`). Everything is grayscale for
+black-and-white printing. The combined sheet imports
 the panel designs from `atis/` and `craft/`, so rerun it after changing
 either of those.
