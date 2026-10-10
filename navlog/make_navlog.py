@@ -20,10 +20,10 @@ sys.dont_write_bytecode = True  # keep the repo root free of __pycache__
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import style  # noqa: E402
 from style import (H, M, GAP, PANEL_W, GRID, HINT, SHADE, FONT, FONT_BOLD,  # noqa: E402
-                   cell, block_frame, dotted, hatch, write_lines, panel_marks)
+                   cell, block_frame, shape_frame, dotted, hatch, write_lines, panel_marks)
 
 LEGS = (11, 12)           # left panel, right panel
-IND = 0.2 * inch          # leg-number gutter; checkpoint rows run across it
+IND = 0.2 * inch          # checkpoint rows overhang the legs by this much
 H1, H2 = 20, 13           # header rows: leg columns, checkpoint columns (pt)
 ROW = 21                  # one leg row or one checkpoint row (pt)
 TITLE_H = 0.22 * inch     # section title band on the back
@@ -60,7 +60,15 @@ def leg_table(c, x, top, w, legs, first):
     xs[-1] = x + w
     cp = xs[7]                       # checkpoint rows end where ETE starts
     y1, y2 = top - H1, top - H1 - H2
-    with block_frame(c, x, y, w, h):
+    yd = y2 - ROW
+    # Outline: checkpoint rows (and their header) overhang the leg rows on
+    # the left, so the route reads down the overhanging tabs.
+    pts = [(xs[0], top), (x + w, top), (x + w, y), (x, y)]
+    for k in range(legs):
+        pts += [(x, y + (2 * k + 1) * ROW), (xs[0], y + (2 * k + 1) * ROW),
+                (xs[0], y + (2 * k + 2) * ROW), (x, y + (2 * k + 2) * ROW)]
+    pts += [(x, y1), (xs[0], y1)]
+    with shape_frame(c, pts):
         # Fills first, lines on top
         c.setFillGray(SHADE)
         c.rect(x, y2, cp - x, H2, stroke=0, fill=1)           # checkpoint heads
@@ -83,8 +91,6 @@ def leg_table(c, x, top, w, legs, first):
             centred(c, FONT, 5, hint, cx, base - 7.5 if label in KEY else base - 7, cw)
             if i:
                 rule(c, xs[i], y1 if i < 7 else y, xs[i], top)
-        c.setFillGray(HINT); centred(c, FONT, 4.6, "LEG", x + IND / 2, top - 12, IND - 2)
-        rule(c, xs[0], y1, xs[0], top)
         rule(c, x, y1, cp, y1)
         c.setFillGray(0.15); c.setFont(FONT_BOLD, 5.8)
         for label, x0 in (("CHECKPOINT", x), ("NAVAID", xs[3]), ("ALT", xs[6])):
@@ -94,7 +100,6 @@ def leg_table(c, x, top, w, legs, first):
         rule(c, x, y2, x + w, y2, heavy=True)
 
         # Departure checkpoint
-        yd = y2 - ROW
         for xx in (xs[3], xs[6], xs[10]):
             rule(c, xx, yd, xx, y2)
 
@@ -103,14 +108,17 @@ def leg_table(c, x, top, w, legs, first):
             lt = yd - i * 2 * ROW            # top of this leg
             mid, lb = lt - ROW, lt - 2 * ROW
             rule(c, x, lt, x + w, lt, heavy=True)
-            for xx in xs[:8]:
+            for xx in xs[1:8]:
                 rule(c, xx, mid, xx, lt)
             for xx in (xs[3], xs[6]):
                 rule(c, xx, lb, xx, mid)
-            dotted(c, x, mid, cp, inset=0)
+            dotted(c, xs[0], mid, cp, inset=0)
             dotted(c, cp, mid, x + w, inset=0)
-            c.setFillGray(HINT); c.setFont(FONT, 5.5)
-            c.drawCentredString(x + IND / 2, mid + 7.5, str(first + i))
+    # Leg numbers sit in the notch beside each leg row
+    c.setFillGray(HINT); c.setFont(FONT, 5.5)
+    for i in range(legs):
+        c.drawCentredString(x + IND / 2, yd - i * 2 * ROW - ROW + 7.5, str(first + i))
+    centred(c, FONT, 4.6, "LEG", x + IND / 2, top - 12, IND - 2)
     c.setFillGray(0)
     return h
 
