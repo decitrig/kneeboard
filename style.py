@@ -12,6 +12,7 @@ import re
 import xml.etree.ElementTree as ET
 from contextlib import contextmanager
 
+from reportlab.lib.colors import black
 from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
@@ -44,8 +45,23 @@ SHADE = 0.95              # lighter fill for rows that alternate with white ones
 RULE = 0.55               # writing guide dots
 RADIUS = 5                # block corner radius, pt
 
-def cell(c, x, y, w, h, text, hint=None, band=False):
-    """A labelled field. band=True gives it the light header fill."""
+def field(c, name, x, y, w, h, multiline=False):
+    """A fill-in-able text box over (x, y, w, h), only on fillable sheets.
+    It has no border or fill, so an empty form prints like the plain sheet."""
+    if not getattr(c, "fillable", False):
+        return
+    assert name not in c.field_names, "duplicate field " + name
+    c.field_names.add(name)
+    size = 10 if multiline else max(6, min(10, round(h * 0.6)))
+    c.acroForm.textfield(name=name, tooltip=name.replace("_", " "),
+                         x=x, y=y, width=w, height=h, value="",
+                         fontName="Helvetica", fontSize=size, textColor=black,
+                         fillColor=None, borderColor=None, borderWidth=0,
+                         fieldFlags="multiline" if multiline else "", maxlen=None)
+
+def cell(c, x, y, w, h, text, hint=None, band=False, name=None):
+    """A labelled field. band=True gives it the light header fill; name makes
+    the space under the label fill-in-able on fillable sheets."""
     if band:
         c.setFillGray(BAND); c.rect(x, y, w, h, stroke=0, fill=1)
     c.setStrokeGray(GRID); c.setLineWidth(0.5); c.rect(x, y, w, h)
@@ -55,6 +71,9 @@ def cell(c, x, y, w, h, text, hint=None, band=False):
         c.setFillGray(HINT); c.setFont(FONT, HINT_SIZE)
         c.drawRightString(x + w - 3.5, y + h - 8, hint)
     c.setFillGray(0)
+    if name:
+        top = 9.5 if text or hint else 0
+        field(c, name, x + 1.5, y + 1, w - 3, h - 2 - top)
 
 def letter_cell(c, x, y, w, h, letter, label, hint=None, tab=0.3 * inch):
     """Field with a black tab holding a big mnemonic letter (CRAFT etc.)."""
@@ -146,10 +165,12 @@ def panel_marks(c, px, name):
     c.setFillGray(0)
     wordmark(c, px + PANEL_W - M, 0.08 * inch)
 
-def build_sheet(out, title, front, back=None):
+def build_sheet(out, title, front, back=None, fillable=False):
     """Write a duplex letter-fold PDF. front and back are (left, right) pairs
-    of panel functions f(c, px); back defaults to a copy of front."""
+    of panel functions f(c, px); back defaults to a copy of front.
+    fillable=True adds a form field wherever the panels call field()."""
     c = canvas.Canvas(out, pagesize=(W, H), initialFontName=FONT, invariant=1)
+    c.fillable, c.field_names = fillable, set()
     c.setTitle(title); c.setAuthor("decitrig"); c.setCreator("decitrig kneeboard")
     for left, right in (front, back or front):
         left(c, 0); right(c, PANEL_W); fold_line(c)

@@ -20,7 +20,8 @@ sys.dont_write_bytecode = True  # keep the repo root free of __pycache__
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import style  # noqa: E402
 from style import (H, M, GAP, PANEL_W, GRID, HINT, SHADE, FONT, FONT_BOLD,  # noqa: E402
-                   cell, block_frame, shape_frame, dotted, hatch, write_lines, panel_marks)
+                   cell, field, block_frame, shape_frame, dotted, hatch, write_lines,
+                   panel_marks)
 
 LEGS = (11, 12)           # left panel, right panel
 IND = 0.2 * inch          # checkpoint rows overhang the legs by this much
@@ -114,6 +115,22 @@ def leg_table(c, x, top, w, legs, first):
                 rule(c, xx, lb, xx, mid)
             dotted(c, xs[0], mid, cp, inset=0)
             dotted(c, cp, mid, x + w, inset=0)
+
+        # Form fields (fillable sheet only)
+        start = "dep" if first == 1 else "cont"
+        cp_fields(c, start, (x, xs[3], xs[6], cp), yd)
+        for j, col in ((9, "DIST"), (10, "FUEL")):
+            box(c, f"{start}_{col.lower()}_rem", xs[j], xs[j + 1], yd)
+        for i in range(legs):
+            n, lt = first + i, yd - i * 2 * ROW
+            for j, (label, _, _) in enumerate(COLS):
+                if j < 7:
+                    box(c, f"leg{n}_{label.lower()}", xs[j], xs[j + 1], lt - ROW)
+                else:
+                    tail = ("leg", "rem") if j > 8 else ("est", "act")
+                    box(c, f"leg{n}_{label.lower()}_{tail[0]}", xs[j], xs[j + 1], lt - ROW)
+                    box(c, f"leg{n}_{label.lower()}_{tail[1]}", xs[j], xs[j + 1], lt - 2 * ROW)
+            cp_fields(c, f"leg{n}", (x, xs[3], xs[6], cp), lt - 2 * ROW)
     # Leg numbers sit in the notch beside each leg row
     c.setFillGray(HINT); c.setFont(FONT, 5.5)
     for i in range(legs):
@@ -121,6 +138,20 @@ def leg_table(c, x, top, w, legs, first):
     centred(c, FONT, 4.6, "LEG", x + IND / 2, top - 12, IND - 2)
     c.setFillGray(0)
     return h
+
+def box(c, name, x1, x2, y):
+    """Field filling one leg-table row between x1 and x2."""
+    field(c, name, x1 + 1.5, y + 1, x2 - x1 - 3, ROW - 2)
+
+def cp_fields(c, prefix, xs, y):
+    """Checkpoint, navaid and altitude fields in a checkpoint row."""
+    for k, label in enumerate(("checkpoint", "navaid", "alt")):
+        box(c, f"{prefix}_{label}", xs[k] + (3 if k == 0 else 0), xs[k + 1], y)
+
+def slug(*parts):
+    """Form field name from printed labels."""
+    words = "".join(ch if ch.isalnum() else " " for ch in " ".join(parts)).lower()
+    return "_".join(words.split())
 
 def route_block(c, x, top, w, h):
     """Aircraft and planning numbers above the left-hand legs."""
@@ -133,7 +164,8 @@ def route_block(c, x, top, w, h):
             unit = w / sum(f[2] for f in row)
             cx = x
             for label, hint, span in row:
-                cell(c, cx, top - (r + 1) * rh, span * unit, rh, label, hint)
+                cell(c, cx, top - (r + 1) * rh, span * unit, rh, label, hint,
+                     name=slug(label))
                 cx += span * unit
 
 def front_left(c, px):
@@ -156,7 +188,7 @@ def section(c, x, top, w, title, fields):
         cell(c, x, top - TITLE_H, w, TITLE_H, title, band=True)
         for i, label in enumerate(fields):
             cell(c, x + (i % 2) * w / 2, top - TITLE_H - (i // 2 + 1) * FIELD_H,
-                 w / 2, FIELD_H, label)
+                 w / 2, FIELD_H, label, name=slug(title.split()[0], label))
     return h
 
 def back_left(c, px):
@@ -171,6 +203,7 @@ def back_left(c, px):
     with block_frame(c, x, y, w, top - y):
         cell(c, x, top - TITLE_H, w, TITLE_H, "NOTES", band=True)
         write_lines(c, x, y, w, top - TITLE_H - style.LINE_PITCH)
+        field(c, "notes", x + 3, y + 3, w - 6, top - TITLE_H - y - 6, multiline=True)
     panel_marks(c, px, "NAVLOG")
 
 def enroute_block(c, x, top, w, h):
@@ -183,7 +216,8 @@ def enroute_block(c, x, top, w, h):
         for label, cw in zip(("ENROUTE FACILITY", "FREQ", "NOTES"), widths):
             cell(c, cx, top - TITLE_H, cw, TITLE_H, label, band=True)
             for r in range(n):
-                cell(c, cx, top - TITLE_H - (r + 1) * rh, cw, rh, "")
+                cell(c, cx, top - TITLE_H - (r + 1) * rh, cw, rh, "",
+                     name=slug("enroute", str(r + 1), label.split()[-1]))
             cx += cw
 
 # Weight & balance stations: (label, hint, total row). Arms are left blank
@@ -221,18 +255,20 @@ def wb_block(c, x, top, w, h):
                 c.setFillGray(SHADE); c.rect(x, ry, w, rh, stroke=0, fill=1)
             for i in range(len(WB_COLS)):
                 cw = xs[i + 1] - xs[i]
+                name = slug("wb", label, WB_COLS[i][0])
                 if i == 0:
                     cell(c, xs[i], ry, cw, rh, label, hint)
                 elif i == 2 and total:
-                    cell(c, xs[i], ry, cw, rh, "CG", "in")
+                    cell(c, xs[i], ry, cw, rh, "CG", "in", name=slug("wb", label, "CG"))
                 else:
-                    cell(c, xs[i], ry, cw, rh, "")
+                    cell(c, xs[i], ry, cw, rh, "", name=name)
             if total:
                 rule(c, x, ry + rh, x + w, ry + rh, heavy=True)
         ly = y + WB_LIMITS
         rule(c, x, ly, x + w, ly, heavy=True)
-        cell(c, x, y, 0.4 * w, WB_LIMITS, "MAX GROSS", "lb")
-        cell(c, x + 0.4 * w, y, 0.6 * w, WB_LIMITS, "CG LIMITS", "fwd – aft")
+        cell(c, x, y, 0.4 * w, WB_LIMITS, "MAX GROSS", "lb", name="wb_max_gross")
+        cell(c, x + 0.4 * w, y, 0.6 * w, WB_LIMITS, "CG LIMITS", "fwd – aft",
+             name="wb_cg_limits")
 
 def back_right(c, px):
     """Enroute frequencies on top, weight & balance below."""
@@ -242,10 +278,14 @@ def back_right(c, px):
     wb_block(c, x, M + half, w, half)
     panel_marks(c, px, "NAVLOG")
 
-def build(out):
-    style.build_sheet(out, "VFR Navlog (C172 kneeboard, letter fold)",
-                      (front_left, front_right), (back_left, back_right))
+def build(out, fillable=False):
+    title = "VFR Navlog (C172 kneeboard, letter fold%s)" % (", fillable" if fillable else "")
+    style.build_sheet(out, title, (front_left, front_right), (back_left, back_right),
+                      fillable=fillable)
 
 if __name__ == "__main__":
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "navlog_letter_fold.pdf")
-    build(out); print(out)
+    here = os.path.dirname(os.path.abspath(__file__))
+    for name, fillable in (("navlog_letter_fold.pdf", False),
+                           ("navlog_letter_fold_fillable.pdf", True)):
+        out = os.path.join(here, name)
+        build(out, fillable); print(out)
