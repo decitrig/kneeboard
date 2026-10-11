@@ -11,7 +11,7 @@ about the fold, so the back lines up whichever edge the printer flips on.
 | ATIS | [atis/atis_letter_fold.pdf](atis/atis_letter_fold.pdf) | 4 ATIS blocks per panel, 16 total |
 | CRAFT | [craft/craft_letter_fold.pdf](craft/craft_letter_fold.pdf) | 3 CRAFT clearance / flight following blocks per panel, 12 total |
 | ATIS + CRAFT | [atis_craft/atis_craft_letter_fold.pdf](atis_craft/atis_craft_letter_fold.pdf) | ATIS panel left, CRAFT panel right, both sides: 8 ATIS + 6 CRAFT |
-| VFR navlog | [navlog/navlog_letter_fold.pdf](navlog/navlog_letter_fold.pdf) | Front: two navlogs (23 legs), side by side. Back: departure / destination / alternate frequencies, enroute frequencies, notes |
+| VFR navlog | [navlog/navlog_letter_fold.pdf](navlog/navlog_letter_fold.pdf) | Front: two navlogs (23 legs), side by side. Back: departure / destination / alternate frequencies, enroute frequencies, weight & balance, notes. [Fillable version](navlog/navlog_letter_fold_fillable.pdf) to type into before printing |
 
 ## Regenerating
 
@@ -44,3 +44,10 @@ header (aircraft, date, from, to, cruise power, TAS, GPH, fuel, endurance)
 and legs 1 to 11, the right panel continues with legs 12 to 23. Each leg is
 a white row of headings followed by the shaded checkpoint it arrives at;
 ETE, GS, distance and fuel span both rows, estimate above and actual below.
+
+`navlog_letter_fold_fillable.pdf` is the same sheet with a form field in
+every blank, weight & balance included, so it can be filled in on a computer
+or tablet and then printed. The fields have no border or fill, so empty it
+prints exactly like the plain PDF. `make_navlog.py` writes both; other
+generators can add fields with `style.field()` or `cell(..., name=...)` and
+`build_sheet(..., fillable=True)`.
