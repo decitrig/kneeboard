@@ -12,6 +12,7 @@ about the fold, so the back lines up whichever edge the printer flips on.
 | CRAFT | [craft/craft_letter_fold.pdf](craft/craft_letter_fold.pdf) | 3 CRAFT clearance / flight following blocks per panel, 12 total |
 | ATIS + CRAFT | [atis_craft/atis_craft_letter_fold.pdf](atis_craft/atis_craft_letter_fold.pdf) | ATIS panel left, CRAFT panel right, both sides: 8 ATIS + 6 CRAFT |
 | VFR navlog | [navlog/navlog_letter_fold.pdf](navlog/navlog_letter_fold.pdf) | Front: two navlogs (23 legs), side by side. Back: departure / destination / alternate frequencies, enroute frequencies, weight & balance, notes. [Fillable version](navlog/navlog_letter_fold_fillable.pdf) to type into before printing |
+| Personal minimums | [minimums/minimums_letter_fold.pdf](minimums/minimums_letter_fold.pdf) | My day VFR minimums (weather, fuel, operations) over the 91.155 day VFR weather minimums table. Same card on every panel, so it can be folded either way or cut into four |
 
 ## Regenerating
 
@@ -24,6 +25,7 @@ python3 atis/make_atis.py
 python3 craft/make_craft.py
 python3 atis_craft/make_atis_craft.py
 python3 navlog/make_navlog.py
+python3 minimums/make_minimums.py
 ```
 
 Each script writes its PDF into its own folder. Fonts, line weights and
